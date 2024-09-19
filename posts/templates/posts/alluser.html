@@ -1,0 +1,46 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+{% for usr in all_user %} 
+{% if usr != request_user %}
+    {% if usr.username in friend %} 
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{usr.profile.image.url}}">
+        <div class="media-body">
+            <h2><a class="article-title" href="{% url 'user-detail' usr.id %}">{{usr.username}}</a></h2>
+        </div>
+
+        <div>
+           Already Friend           
+        </div>
+    </article>
+    {% else %} 
+        <article class="media content-section">
+            <img class="rounded-circle article-img" src="{{usr.profile.image.url}}">
+            <div class="media-body">
+                <h2><a class="article-title" href="{% url 'user-detail' usr.id %}">{{usr.username}}</a></h2>
+            </div>
+
+            <div>
+                <form action="{% url 'added_friend' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="data" value="{{usr.username}}">
+                    <!--<input type="hidden" name="data2" value="{{usr.id}}">-->
+                    <!-- <input type="hidden" name="data2" value="{{usr.id}}"> -->
+                    <input type="submit" class="submit_btn btn label-success" value="Add friend" />
+                </form>            
+            </div>
+        </article>
+    {% endif %} 
+{% endif %} 
+{% endfor %} 
+
+{% else %}
+    <h1 style="color: red;"> You are not logged in! </h1>
+{% endif %}
+
+
+{% endblock content %}

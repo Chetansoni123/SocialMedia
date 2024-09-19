@@ -1,0 +1,121 @@
+{% extends 'posts/base.html' %}
+
+{% block content %} 
+
+{% if user.is_authenticated %}
+
+    {% if found is not None %} 
+        {% for each in found %} 
+            {% if each.username in friend %} 
+                <article class="media content-section">
+                    <img class="rounded-circle article-img" src="{{each.profile.image.url}}">
+                    <div class="media-body">
+                        <h2><a class="article-title" href="{% url 'user-detail' each.id %}">{{each.username}}</a></h2>
+                    </div>
+
+                    <div>
+                        Already Friend
+                    </div>
+                </article>
+            {% else %}
+                <article class="media content-section">
+                    <img class="rounded-circle article-img" src="{{each.profile.image.url}}">
+                    <div class="media-body">
+                        <h2><a class="article-title" href="{% url 'user-detail' each.id %}">{{each.username}}</a></h2>
+                    </div>
+
+                    <div>
+                        <form action="{% url 'added_friend' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="data" value="{{each.username}}">
+                            <!--<input type="hidden" name="data2" value="{{usr.id}}">-->
+                            <!-- <input type="hidden" name="data2" value="{{usr.id}}"> -->
+                            <input type="submit" class="submit_btn btn label-success" value="Add friend" />
+                        </form>            
+                    </div>
+                </article>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% if mob_user.user_mobile.username in friend %} 
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{mob_user.user_mobile.profile.image.url}}">
+                <div class="media-body">
+                    <h2><a class="article-title" href="{% url 'user-detail' mob_user.user_mobile.id %}">{{mob_user.user_mobile.username}}</a></h2>
+                </div>
+
+                <div>
+                    Already Friend
+                </div>
+            </article>
+        {% else %}
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{mob_user.user_mobile.profile.image.url}}">
+                <div class="media-body">
+                    <h2><a class="article-title" href="{% url 'user-detail' mob_user.user_mobile.id %}">{{mob_user.user_mobile.username}}</a></h2>
+                </div>
+
+                <div>
+                    <form action="{% url 'added_friend' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="data" value="{{mob_user.user_mobile.username}}">
+                        <!--<input type="hidden" name="data2" value="{{usr.id}}">-->
+                        <!-- <input type="hidden" name="data2" value="{{usr.id}}"> -->
+                        <input type="submit" class="submit_btn btn label-success" value="Add friend" />
+                    </form>            
+                </div>
+            </article>
+        {% endif %}
+    {% endif %}
+
+<!-- Prints all the friends of the current user-->
+{% for usr in all_user %} 
+    {% if query != usr.username and query != usr.mobile.mobile %}
+        {% if usr.username in friend %} 
+            {% if usr != request_user %}
+                <article class="media content-section">
+                    <img class="rounded-circle article-img" src="{{usr.profile.image.url}}">
+                    <div class="media-body">
+                        <h2><a class="article-title" href="{% url 'user-detail' usr.id %}">{{usr.username}}</a></h2>
+                    </div>
+
+                    <div>
+                        Already Friend
+                    </div>
+                </article>
+            {% endif %}
+        {% endif %}
+    {% endif %} 
+{% endfor %} 
+
+<!--It prints other users who are not friend of current user-->
+{% for usr in all_user %} 
+    {% if query != usr.mobile.mobile and query != usr.username %} 
+        {% if usr.username not in friend %} 
+            {% if usr != request_user %}
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{usr.profile.image.url}}">
+                <div class="media-body">
+                    <h2><a class="article-title" href="{% url 'user-detail' usr.id %}">{{usr.username}}</a></h2>
+                </div>
+
+                <div>
+                    <form action="{% url 'added_friend' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="data" value="{{usr.username}}">
+                        <!--<input type="hidden" name="data2" value="{{usr.id}}">-->
+                        <!-- <input type="hidden" name="data2" value="{{usr.id}}"> -->
+                        <input type="submit" class="submit_btn btn label-success" value="Add friend" />
+                    </form>            
+                </div>
+            </article>
+            {% endif %}
+        {% endif %}
+    {% endif %} 
+{% endfor %} 
+
+{% else %}
+    <h1 style="color: red;"> You are not logged in! </h1>
+{% endif %}
+
+{% endblock content %} 
